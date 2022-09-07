@@ -17,15 +17,14 @@ app.use(express.static("public"));
 
 const articleSchema= new mongoose.Schema({
     title:String,
-    connect:String,
+    content:String,
 });
 
 const Article=mongoose.model("Article",articleSchema);
 
-
-
-app.get('/articles', (req, res) =>{ 
-    
+//////////////////////////////////////////////////////////// handle all articles////////////////////////////////////////////////////////////
+app.route("/articles")
+.get((req, res) =>{     
     Article.find({},(err,foundArticles)=>{
         if(!err){
             res.send(foundArticles)
@@ -33,8 +32,54 @@ app.get('/articles', (req, res) =>{
             console.log(err)
         }
         
+    });
+})
+.post(function (req, res) {
+    
+    const newArticle=new Article({
+        title:req.body.title,
+        content:req.body.content,
+    });
+    newArticle.save((err)=>{
+        if(!err){
+            res.send("successfully added new article to ")
+        }else{
+            console.log(err)
+        }
     })
+})
+.delete(function(req, res) {
+    Article.deleteMany({},(err)=>{
+        if(!err){
+            res.send("SuccessFully deleted all articles. ");
+        }else{
+            console.log(err);
+        }
+    });
+});
+///////////////////////////////////////////////// handle a single article ///////////////////////////////////////////////////////////////////////
 
+app.route('/articles/:articleTitle').get((req, res)=>{
+
+    Article.findOne({title:req.params.articleTitle},(err,foundArticle)=>{
+        if(foundArticle){
+            res.send(foundArticle)
+        }else{
+            res.send("No article matching that title found  ")
+        }
+    }); 
+})
+.put((req, res)=>{
+    Article.findOneAndUpdate(
+        {title:req.params.articleTitle},
+        { title:req.body.title,
+        content:req.body.content},
+        (err)=>{
+            if(!err){
+                res.send("successFully updated article")
+            }
+        }
+    )
 });
 
 
