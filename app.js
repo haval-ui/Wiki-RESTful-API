@@ -27,9 +27,9 @@ app.route("/articles")
 .get((req, res) =>{     
     Article.find({},(err,foundArticles)=>{
         if(!err){
-            res.send(foundArticles)
+            res.send(foundArticles);
         }else{
-            console.log(err)
+            console.log(err);
         }
         
     });
@@ -42,9 +42,9 @@ app.route("/articles")
     });
     newArticle.save((err)=>{
         if(!err){
-            res.send("successfully added new article to ")
+            res.send("successfully added new article to ");
         }else{
-            console.log(err)
+            console.log(err);
         }
     })
 })
@@ -63,9 +63,9 @@ app.route('/articles/:articleTitle').get((req, res)=>{
 
     Article.findOne({title:req.params.articleTitle},(err,foundArticle)=>{
         if(foundArticle){
-            res.send(foundArticle)
+            res.send(foundArticle);
         }else{
-            res.send("No article matching that title found  ")
+            res.send("No article matching that title found  ");
         }
     }); 
 })
@@ -74,12 +74,38 @@ app.route('/articles/:articleTitle').get((req, res)=>{
         {title:req.params.articleTitle},
         { title:req.body.title,
         content:req.body.content},
+        {overwrite:true},
         (err)=>{
             if(!err){
                 res.send("successFully updated article")
+            }else{
+                console.log(err);
             }
         }
-    )
+    );
+})
+.patch((req,res)=>{
+    Article.findOneAndUpdate(
+        {title:req.params.articleTitle},
+        {$set:req.body},
+        (err)=>{
+            if(!err){
+                res.send("successFully updated article")
+            }else{
+                console.log(err);
+            }
+        }
+    );
+})
+.delete((req, res)=>{
+    Article.findOneAndDelete({title:req.params.articleTitle},(err)=>{
+        if(!err){
+            
+            res.send("delete article successful ")
+        }else{
+            console.log(err)
+        }
+    });
 });
 
 
